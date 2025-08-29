@@ -3,23 +3,33 @@ from bs4 import BeautifulSoup
 import re
 import urllib3
 import time
+from typing import Tuple, Dict, List, Any
 
-def get_binance_p2p_prices(trade_type: str):
+def get_binance_p2p_prices(trade_type: str, asset:str = "usdt",payTypes:list =[],page:int = 1) -> Tuple[float, float, float]:
+    """ Obtiene los precios del P2P de Binance para un tipo de operación (BUY o SELL).
+        Parámetros:
+            trade_type: "BUY" o "SELL"
+            asset: Criptomoneda a consultar (por defecto "usdt")
+            payTypes: Lista de métodos de pago a filtrar (por defecto todos)
+            page: Página de resultados a consultar (por defecto 1)
+        Retorna:
+            first_price: Primer precio listado
+            simple_avg: Promedio simple de los precios listados
+            weighted_avg: Promedio ponderado por volumen de los precios listados
     """
-    Obtiene los precios del P2P de Binance para un tipo de operación (BUY o SELL).
-    """
+
     url = "https://p2p.binance.com/bapi/c2c/v2/friendly/c2c/adv/search"
     headers = {
         "Content-Type": "application/json",
         "clienttype": "web",
     }
     payload = {
-        "asset": "USDT",
+        "asset": asset.upper(),
         "fiat": "VES",
         "tradeType": trade_type,
-        "page": 1,
+        "page": page,
         "rows": 20,
-        "payTypes": [], #Se deja vacio para que escoja todas las opciones de pago.
+        "payTypes": payTypes, #Se deja vacio para que escoja todas las opciones de pago.
 	#En las proximas versiones se mejorará la funcion para que reciba varios
 	#payTypes y otros parametros para este POST.
         "publisherType": None
